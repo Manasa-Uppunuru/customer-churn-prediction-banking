@@ -10,7 +10,7 @@
 
 This project builds and evaluates machine learning models to predict customer churn in retail banking. Using a dataset of 10,000 anonymized bank customers, the study compares a linear model (Logistic Regression) against a non-linear tree-based model (Random Forest), after handling severe class imbalance using SMOTE-ENN resampling.
 
-**Result: Random Forest significantly outperformed Logistic Regression, achieving a cross-validated ROC-AUC of 0.977.**
+**Reported comparison:** Random Forest has a higher cross-validation ROC-AUC than Logistic Regression in the existing analysis. The reported test results are substantially weaker; see the evaluation limitations below before interpreting this as generalization performance.
 
 ---
 
@@ -28,16 +28,27 @@ This project builds and evaluates machine learning models to predict customer ch
 | Logistic Regression | 19% | 0.575 | 0% ❌ |
 | **Random Forest** | **59%** | **0.977** | **37%** ✅ |
 
-✅ Random Forest outperformed Logistic Regression across **every single metric**
+These are the existing project-reported figures, not newly reproduced benchmarks. Cross-validation and test metrics describe different evaluations and should not be compared as equivalent evidence.
+
+### Evaluation limitations
+
+- With a reported churn rate of 19.57%, always predicting retention would achieve roughly 80.43% accuracy on that overall distribution. The reported 59% Random Forest test accuracy is below that reference, so this result does not establish a production-ready churn model. The exact test-set baseline should be computed from its labels.
+- The documented cross-validation is performed on already resampled training data. If resampling occurs before fold splitting, information can cross validation boundaries and inflate scores. A stronger follow-up is an imbalanced-learn pipeline that fits preprocessing and resampling inside each training fold, with a separate untouched test set.
+- Verify class labels, target alignment, decision thresholds, and the interpretation of "Churners Detected" against the notebook outputs. Report held-out ROC-AUC, precision-recall AUC, and class-specific recall alongside baselines.
+- This is an academic group project. Results should be re-evaluated before using the model for customer decisions.
 
 ---
+
+## Quick review
+
+Open the [analysis notebook](R_Analysis_Code%20.ipynb) to inspect the workflow and stored outputs. The filename contains a space before `.ipynb`; the link above matches the repository file exactly. See [Churn_Modelling.csv](Churn_Modelling.csv) for the input dataset. Group-project contributors are credited above; individual task ownership is not specified here.
 
 ## 🗂️ Project Structure
 
 ```
 customer-churn-prediction-banking/
 │
-├── 📓 R_Analysis_Code_.ipynb     # Full ML pipeline — EDA, models, evaluation
+├── 📓 R_Analysis_Code .ipynb     # Full ML pipeline — EDA, models, evaluation
 ├── 📄 Churn_Modelling.csv        # Dataset (10,000 banking customers)
 └── 📄 README.md
 ```
@@ -120,17 +131,17 @@ cd customer-churn-prediction-banking
 jupyter notebook
 ```
 
-3. Open and run `R_Analysis_Code_.ipynb`
+3. Open and run `R_Analysis_Code .ipynb`
 
 ---
 
 ## 💡 Key Findings
 
-1. **Financial stress drives churn** — CreditScore (13.7%) and Balance (13.2%) are the top predictors via Random Forest feature importance
-2. **Non-linear models are essential** — Logistic Regression detected 0 churners vs Random Forest detecting 37%
-3. **SMOTE-ENN is effective** — resolved 80/20 imbalance enabling proper minority class learning
-4. **Churn emerges from interactions** — no single feature separates churners; combinations matter
-5. **Practical implication** — banks should target high-balance/low-credit-score customers for retention campaigns
+1. **Reported feature importance** — CreditScore (13.7%) and Balance (13.2%) rank highly in the existing Random Forest analysis. Feature importance does not establish that financial stress causes churn.
+2. **Model comparison requires further validation** — the reported churn-detection figures differ across models, but the weak test results and validation setup require investigation.
+3. **Resampling changes the learning distribution** — SMOTE-ENN was explored to address imbalance; effectiveness must be evaluated on untouched data.
+4. **Further analysis** — investigate feature relationships and model errors before drawing conclusions about churn drivers.
+5. **Potential use case** — retention analysis is a possible application, but targeting recommendations need validated predictions, business-cost analysis, and appropriate review.
 
 ---
 
